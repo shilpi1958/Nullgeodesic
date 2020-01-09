@@ -2,6 +2,7 @@ import astropy.units as u
 import numpy as np
 
 from einsteinpy.utils import kerr_utils
+from einsteinpy import constant
 from initialcondition import InitialConditionsBHFrame
 
 
@@ -104,7 +105,7 @@ class MotionConstants(InitialConditionsBHFrame):
         r = coords[0] * u.km
         theta = coords[1] * u.rad
         sg = kerr_utils.sigma(r, theta, self.a)
-        dl = kerr_utils.delta(r, self.M, self.a, c=constant.c.value, G=constant.G.value)
+        dl = self._delta(r, self.a)
         v_ini = self.initial_velocity_photon(self.x, self.y, self.z)
         restmass = 0
         E = self.energy()
