@@ -73,9 +73,57 @@ class InitialConditionsBHFrame:
 
         blackhole_grid = Cartesian(x_bh , y_bh , z_bh)
 
+        return blackhole_grid
+
+    def coord_photon_bl(self , x , y , z):
+
+        """
+
+        Parameters
+        ----------
+        r_obs : float
+                The observer is located at a distance r_obs from
+                the black hole center
+
+        theta_obs: float
+                The observer is located at an angle theta_obs
+                from the positive black hole z'-axis
+                (coinciding with the spin axis)
+
+        phi_obs: float
+                The observer is located at an angle phi_obs
+                with respect to the black hole’s x′-axis
+
+        M : float
+            Mass of massive body
+
+        a : float
+            Spin factor
+
+        x , y , z: float
+            Coordinates in observer's coordinate system i.e. observer grid
+
+        x_bh , y_bh , z_bh:
+            Coordinates in black hole's  coordinate system
+
+        Returns
+        -------
+        array
+            (r, θ, φ) conditions for a photon on the observer grid
+
+        """
+
+        D = (((np.sqrt((self.r_obs * self.r_obs) + (self.a * self.a))) - z) * np.sin(self.theta_obs))
+        -(y * np.cos(self.theta_obs))
+
+
+        x_bh = (D * np.cos(self.phi_obs)) - (x * np.sin(self.phi_obs))
+        y_bh = (D * np.sin(self.phi_obs)) + (x * np.cos(self.phi_obs))
+        z_bh = (self.r_obs - z) * np.cos(self.theta_obs) + (y * np.sin(self.theta_obs))
+
+        blackhole_grid = Cartesian(x_bh , y_bh , z_bh)
+
         return blackhole_grid.to_bl(self.a)
-
-
 
     def initial_velocity_photon(self, x , y ,z):
 

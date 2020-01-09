@@ -74,9 +74,8 @@ class MotionConstants(InitialConditionsBHFrame):
         v_ini    = self.initial_velocity_photon(self.x ,self.y ,self.z)
         restmass = 0
 
-        A = (sg - (2 * r))/(sg * dl)
-        B = (sg * v_ini[0] * v_ini[0]) + (sg * dl * v_ini[1] * v_ini[1]) - (dl * restmass)
-
+        A = (sg - (2 * r * u.km))/dl
+        B = (v_ini[0] * v_ini[0]) + (dl * v_ini[1] * v_ini[1])
         return np.sqrt((A * B) -(dl * (v_ini[2] * np.cos(theta))** 2))
 
 
