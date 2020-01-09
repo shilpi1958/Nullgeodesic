@@ -1,7 +1,6 @@
 import astropy.units as u
 import numpy as np
 
-from einsteinpy.coordinates import BoyerLindquistDifferential
 from einsteinpy.utils import kerr_utils
 from initialcondition import InitialConditionsBHFrame
 
@@ -29,6 +28,22 @@ class MotionConstants(InitialConditionsBHFrame):
         self.x = x
         self.y = y
         self.z = z
+
+    def _delta(self, r, a):
+        """
+        Parameters
+        ----------
+        r : float
+            Component r in vector
+        a : float
+            Any constant
+        Returns
+        -------
+        float
+            The value r^2 + r + a^2
+        
+        """
+        return (r ** 2) - (r * u.km) + (a ** 2)
 
     def energy(self):
 
@@ -70,7 +85,7 @@ class MotionConstants(InitialConditionsBHFrame):
         r = coords[0] * u.km
         theta = coords[1] * u.rad
         sg = kerr_utils.sigma(r, theta, self.a)
-        dl = kerr_utils.delta(r, self.M, self.a)
+        dl = self._delta(r, self.a)
         v_ini = self.initial_velocity_photon(self.x, self.y, self.z)
         restmass = 0
 
