@@ -44,7 +44,7 @@ class MotionConstants(InitialConditionsBHFrame):
             The value r^2 + r + a^2
         
         """
-        return (r ** 2) - (r * u.km) + (a ** 2)
+        return (r ** 2) - (r * u.m) + (a ** 2)
 
     def energy(self):
 
@@ -91,8 +91,8 @@ class MotionConstants(InitialConditionsBHFrame):
         restmass = 0
 
         A = (sg - (2 * r * u.km)) / dl
-        B = (v_ini[0] * v_ini[0]) + (dl * v_ini[1] * v_ini[1])
-        return np.sqrt((A * B) - (dl * (v_ini[2] * np.cos(theta)) ** 2))
+        B = (v_ini.v_r * v_ini.v_r) * u.rad * u.rad + (dl * v_ini.v_t * v_ini.v_t)
+        return np.sqrt((A * B) - (dl * (v_ini.v_p * np.cos(theta)) ** 2))
 
     def angular_momentum_z(self):
 
@@ -110,7 +110,7 @@ class MotionConstants(InitialConditionsBHFrame):
         restmass = 0
         E = self.energy()
 
-        A = (dl * sg * v_ini[2]) - (2 * a * r * E)
+        A = (dl * sg * v_ini.v_p) - (2 * self.a * r * E)
         B = sg - (2 * r)
 
         return (A * np.sin(theta) * np.sin(theta)) / B
