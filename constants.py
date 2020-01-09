@@ -1,9 +1,10 @@
-import numpy as np
 import astropy.units as u
+import numpy as np
 
-from einsteinpy.utils import kerr_utils
 from einsteinpy.coordinates import BoyerLindquistDifferential
+from einsteinpy.utils import kerr_utils
 from initialcondition import InitialConditionsBHFrame
+
 
 class MotionConstants(InitialConditionsBHFrame):
 
@@ -13,22 +14,21 @@ class MotionConstants(InitialConditionsBHFrame):
 
     @u.quantity_input(
         M=u.kg,
-        r_obs =u.km,
+        r_obs=u.km,
         theta_obs=u.rad,
-        phi_obs=u.rad ,
+        phi_obs=u.rad,
         a=u.km,
-        x = u.km,
-        y = u.km,
-        z = u.km)
+        x=u.km,
+        y=u.km,
+        z=u.km,
+    )
+    def __init__(self, r_obs, theta_obs, phi_obs, a, M, x, y, z):
 
-    def __init__(self, r_obs ,theta_obs, phi_obs, a, M, x, y ,z ):
-
-        super(MotionConstants, self).__init__(r_obs ,theta_obs, phi_obs, a)
+        super(MotionConstants, self).__init__(r_obs, theta_obs, phi_obs, a)
         self.M = M
         self.x = x
         self.y = y
         self.z = z
-
 
     def energy(self):
 
@@ -65,19 +65,18 @@ class MotionConstants(InitialConditionsBHFrame):
 
         """
 
-        coordinates = self.coord_photon( self.x ,self.y ,self.z)
+        coordinates = self.coord_photon(self.x, self.y, self.z)
         coords = coordinates.si_values()
-        r        = coords[0] * u.km
-        theta    = coords[1] * u.rad
-        sg       = kerr_utils.sigma(r, theta, self.a)
-        dl       = kerr_utils.delta(r , self.M , self.a)
-        v_ini    = self.initial_velocity_photon(self.x ,self.y ,self.z)
+        r = coords[0] * u.km
+        theta = coords[1] * u.rad
+        sg = kerr_utils.sigma(r, theta, self.a)
+        dl = kerr_utils.delta(r, self.M, self.a)
+        v_ini = self.initial_velocity_photon(self.x, self.y, self.z)
         restmass = 0
 
-        A = (sg - (2 * r * u.km))/dl
+        A = (sg - (2 * r * u.km)) / dl
         B = (v_ini[0] * v_ini[0]) + (dl * v_ini[1] * v_ini[1])
-        return np.sqrt((A * B) -(dl * (v_ini[2] * np.cos(theta))** 2))
-
+        return np.sqrt((A * B) - (dl * (v_ini[2] * np.cos(theta)) ** 2))
 
     def angular_momentum_z(self):
 
@@ -85,21 +84,20 @@ class MotionConstants(InitialConditionsBHFrame):
         Returns Angular momentum (Lz) which is constant along the geodesic.
         """
 
-        coordinates = self.coord_photon( self.x ,self.y ,self.z)
+        coordinates = self.coord_photon(self.x, self.y, self.z)
         coords = coordinates.si_values()
-        r        = coords[0] * u.km
-        theta    = coords[1] * u.rad
-        sg       = kerr_utils.sigma(r, theta, self.a)
-        dl       = kerr_utils.delta(r , self.M , self.a, c=constant.c.value, G=constant.G.value)
-        v_ini    = self.initial_velocity_photon( self.x ,self.y ,self.z)
+        r = coords[0] * u.km
+        theta = coords[1] * u.rad
+        sg = kerr_utils.sigma(r, theta, self.a)
+        dl = kerr_utils.delta(r, self.M, self.a, c=constant.c.value, G=constant.G.value)
+        v_ini = self.initial_velocity_photon(self.x, self.y, self.z)
         restmass = 0
         E = self.energy()
 
         A = (dl * sg * v_ini[2]) - (2 * a * r * E)
         B = sg - (2 * r)
 
-        return (A  * np.sin(theta) *np.sin(theta)) / B
-
+        return (A * np.sin(theta) * np.sin(theta)) / B
 
     def carter_const(self):
 
@@ -108,16 +106,15 @@ class MotionConstants(InitialConditionsBHFrame):
         """
         lz = self.angular_momentum_z()
         E = self.energy()
-        v_ini    = self.initial_velocity_photon( self.x ,self.y ,self.z)
-        p_theta =  v_ini[1] * E
+        v_ini = self.initial_velocity_photon(self.x, self.y, self.z)
+        p_theta = v_ini[1] * E
         restmass = 0
 
-        coordinates = self.coord_photon( self.x ,self.y ,self.z)
+        coordinates = self.coord_photon(self.x, self.y, self.z)
         coords = coordinates.si_values()
-        theta    = coords[1] * u.rad
+        theta = coords[1] * u.rad
 
         A = lz * np.cosec(theta)
         B = (a * a) * (E * E + restmass)
-
 
         return (p_theta * p_theta) + (A - B) * (np.cos(theta) * np.cos(theta))

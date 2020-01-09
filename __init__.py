@@ -1,2 +1,2 @@
-from .initialcondition import InitialConditionsBHFrame
 from .constants import MotionConstants
+from .initialcondition import InitialConditionsBHFrame

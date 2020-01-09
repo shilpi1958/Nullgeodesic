@@ -1,9 +1,10 @@
+import astropy.units as u
 import numpy as np
 from astropy import constants
-import astropy.units as u
 
+from einsteinpy.coordinates import Cartesian, CartesianDifferential
 from einsteinpy.utils import kerr_utils
-from einsteinpy.coordinates import Cartesian ,CartesianDifferential
+
 
 class InitialConditionsBHFrame:
 
@@ -11,21 +12,15 @@ class InitialConditionsBHFrame:
     Class for defining initial conditions for photon rays in black hole frame
     """
 
-    @u.quantity_input(
-        r_obs =u.km,
-        theta_obs=u.rad,
-        phi_obs=u.rad ,
-        a=u.km
-        )
-
-    def __init__(self, r_obs ,theta_obs, phi_obs,  a ):
+    @u.quantity_input(r_obs=u.km, theta_obs=u.rad, phi_obs=u.rad, a=u.km)
+    def __init__(self, r_obs, theta_obs, phi_obs, a):
         self.a = a
-       #self.M = M
-        self.r_obs= r_obs
-        self.theta_obs= theta_obs
-        self.phi_obs= phi_obs
+        # self.M = M
+        self.r_obs = r_obs
+        self.theta_obs = theta_obs
+        self.phi_obs = phi_obs
 
-    def coord_photon(self , x , y , z):
+    def coord_photon(self, x, y, z):
 
         """
 
@@ -63,19 +58,20 @@ class InitialConditionsBHFrame:
 
         """
 
-        D = (((np.sqrt((self.r_obs * self.r_obs) + (self.a * self.a))) - z) * np.sin(self.theta_obs))
+        D = ((np.sqrt((self.r_obs * self.r_obs) + (self.a * self.a))) - z) * np.sin(
+            self.theta_obs
+        )
         -(y * np.cos(self.theta_obs))
-
 
         x_bh = (D * np.cos(self.phi_obs)) - (x * np.sin(self.phi_obs))
         y_bh = (D * np.sin(self.phi_obs)) + (x * np.cos(self.phi_obs))
         z_bh = (self.r_obs - z) * np.cos(self.theta_obs) + (y * np.sin(self.theta_obs))
 
-        blackhole_grid = Cartesian(x_bh , y_bh , z_bh)
+        blackhole_grid = Cartesian(x_bh, y_bh, z_bh)
 
         return blackhole_grid
 
-    def coord_photon_bl(self , x , y , z):
+    def coord_photon_bl(self, x, y, z):
 
         """
 
@@ -113,19 +109,20 @@ class InitialConditionsBHFrame:
 
         """
 
-        D = (((np.sqrt((self.r_obs * self.r_obs) + (self.a * self.a))) - z) * np.sin(self.theta_obs))
+        D = ((np.sqrt((self.r_obs * self.r_obs) + (self.a * self.a))) - z) * np.sin(
+            self.theta_obs
+        )
         -(y * np.cos(self.theta_obs))
-
 
         x_bh = (D * np.cos(self.phi_obs)) - (x * np.sin(self.phi_obs))
         y_bh = (D * np.sin(self.phi_obs)) + (x * np.cos(self.phi_obs))
         z_bh = (self.r_obs - z) * np.cos(self.theta_obs) + (y * np.sin(self.theta_obs))
 
-        blackhole_grid = Cartesian(x_bh , y_bh , z_bh)
+        blackhole_grid = Cartesian(x_bh, y_bh, z_bh)
 
         return blackhole_grid.to_bl(self.a)
 
-    def initial_velocity_photon(self, x , y ,z):
+    def initial_velocity_photon(self, x, y, z):
 
         """
 
@@ -175,18 +172,19 @@ class InitialConditionsBHFrame:
 
             """
 
-        coordinates = self.coord_photon(x , y , z)
+        coordinates = self.coord_photon(x, y, z)
         coords = coordinates.si_values()
-        x_bh = coords[0]  * u.km
-        y_bh = coords[1]  * u.km
-        z_bh = coords[2]  * u.km
-
+        x_bh = coords[0] * u.km
+        y_bh = coords[1] * u.km
+        z_bh = coords[2] * u.km
 
         # velocity in observer grid : (0, 0, 1)
-        x_vel_bh = - (np.cos(self.phi_obs) * np.sin(self.theta_obs)) * u.km / u.s
-        y_vel_bh = - (np.sin(self.phi_obs) * np.sin(self.theta_obs)) * u.km / u.s
-        z_vel_bh = - (np.cos(self.theta_obs)) * u.km / u.s
+        x_vel_bh = -(np.cos(self.phi_obs) * np.sin(self.theta_obs)) * u.km / u.s
+        y_vel_bh = -(np.sin(self.phi_obs) * np.sin(self.theta_obs)) * u.km / u.s
+        z_vel_bh = -(np.cos(self.theta_obs)) * u.km / u.s
 
-        photon_velocity = CartesianDifferential(x_bh, y_bh, z_bh, x_vel_bh , y_vel_bh , z_vel_bh )
+        photon_velocity = CartesianDifferential(
+            x_bh, y_bh, z_bh, x_vel_bh, y_vel_bh, z_vel_bh
+        )
 
         return photon_velocity.bl_differential(self.a)
